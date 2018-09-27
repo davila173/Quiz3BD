@@ -1,0 +1,62 @@
+--TABLESPACE
+CREATE TABLESPACE quiz_noche 
+    DATAFILE 'datafile1.dbf' SIZE 10M,
+             'datafile2.dbf' SIZE 10M
+    ONLINE;
+
+--PERFIL
+CREATE PROFILE estudiante LIMIT 
+  IDLE_TIME            10;   -- minutos
+
+
+--USUARIO 1
+
+    CREATE USER user1
+    IDENTIFIED BY user1
+    DEFAULT TABLESPACE quiz_noche;
+    ALTER USER user1 PROFILE estudiante;
+    GRANT CREATE SESSION TO user1;
+    GRANT CREATE TABLE TO user1;
+    
+--usuario2
+    
+    CREATE USER user_2
+    IDENTIFIED BY user_2
+    DEFAULT TABLESPACE quiz_noche;
+    ALTER USER user_2 PROFILE estudiante;
+    GRANT CREATE SESSION,dba TO user_2;
+    GRANT SELECT ON user1.attacks TO user_2;
+
+
+--tabla
+
+create table attacks (
+	id INT,
+	url VARCHAR(2048),
+	ip_address VARCHAR(20),
+	number_of_attacks INT,
+	time_of_last_attack TIMESTAMP
+);
+
+--SELECTS
+--1
+SELECT COUNT(URL)
+FROM attacks
+WHERE URL = 'http%' AND NUMBER_OF_ATTACKS <> 0
+GROUP BY ID, IP_ADDRESS, NUMBER_OF_ATTACKS, time_of_last_attack;
+
+--2
+Select rownum as registro
+FROM attacks
+WHERE URL = '%google%'
+order by NUMBER_OF_ATTACKS desc;
+
+--3
+Select rownum registro, IP_ADDRESS
+FROM attacks
+WHERE time_of_last_attack BETWEEN  TO_DATE ('2018-01-01T00:00:00', 'YYYY-MM-DD"T"HH24:MI:SS') and TO_DATE('2018-12-31T00:00:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+
+--4
+select ip
+from attacks
+where NUMBER_OF_ATTACKS = max;
